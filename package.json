@@ -1,0 +1,22 @@
+{
+  "name": "brencut",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "build": "node build.mjs",
+    "dev": "node build.mjs --serve"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "usb": "^2.14.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.10",
+    "puppeteer-core": "^24.22.3"
+  }
+}

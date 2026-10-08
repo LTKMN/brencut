@@ -1,0 +1,1110 @@
+{
+  "source": "ht_plt_core.dll",
+  "cases": [
+    {
+      "name": "square-exact",
+      "image": "square-4x7.png",
+      "plt": "square-exact.plt",
+      "expectation": "exact",
+      "note": "axis-aligned rectangle, no simplification, no ramps",
+      "config": {
+        "kernel-shape": "morph_ellipse",
+        "filtered-min-area": 1,
+        "circle-fitting": {
+          "enabled": false,
+          "circularity-threshold": 0.03,
+          "num-of-edges": 32
+        },
+        "douglas-peucker": {
+          "enabled": false,
+          "min-epsilon": 0.0001,
+          "max-epsilon": 0.001,
+          "steps": 0,
+          "complexity": {
+            "circumference": 0.6,
+            "curvature": 0.1,
+            "convexity": 0.3,
+            "gradient": 0.5
+          }
+        },
+        "visvalingam-whyatt": {
+          "enabled": false,
+          "max-area": 15
+        },
+        "extension": {
+          "enabled": false,
+          "inner-enabled": false,
+          "max-degree": 45,
+          "max-length": 1.5,
+          "steps": 3
+        },
+        "image": {
+          "margin": 0,
+          "fill-method": "fit",
+          "scale-ratio": 1.0,
+          "binary": {
+            "method": "thresholding",
+            "png-thresholding": true,
+            "threshold": 240,
+            "gaussian-blur": {
+              "enabled": false,
+              "kernel-size": [
+                9,
+                9
+              ]
+            }
+          }
+        },
+        "contours": {
+          "internal": false,
+          "inner-direction": "clockwise",
+          "outter-direction": "origin"
+        }
+      },
+      "dilation": 0.0,
+      "angle": 0.0,
+      "mediaType": 2030,
+      "kp": 1.0
+    },
+    {
+      "name": "square-kp3",
+      "image": "square-4x7.png",
+      "plt": "square-kp3.plt",
+      "expectation": "exact",
+      "note": "knife pressure passes through to the KP header",
+      "config": {
+        "kernel-shape": "morph_ellipse",
+        "filtered-min-area": 1,
+        "circle-fitting": {
+          "enabled": false,
+          "circularity-threshold": 0.03,
+          "num-of-edges": 32
+        },
+        "douglas-peucker": {
+          "enabled": false,
+          "min-epsilon": 0.0001,
+          "max-epsilon": 0.001,
+          "steps": 0,
+          "complexity": {
+            "circumference": 0.6,
+            "curvature": 0.1,
+            "convexity": 0.3,
+            "gradient": 0.5
+          }
+        },
+        "visvalingam-whyatt": {
+          "enabled": false,
+          "max-area": 15
+        },
+        "extension": {
+          "enabled": false,
+          "inner-enabled": false,
+          "max-degree": 45,
+          "max-length": 1.5,
+          "steps": 3
+        },
+        "image": {
+          "margin": 0,
+          "fill-method": "fit",
+          "scale-ratio": 1.0,
+          "binary": {
+            "method": "thresholding",
+            "png-thresholding": true,
+            "threshold": 240,
+            "gaussian-blur": {
+              "enabled": false,
+              "kernel-size": [
+                9,
+                9
+              ]
+            }
+          }
+        },
+        "contours": {
+          "internal": false,
+          "inner-direction": "clockwise",
+          "outter-direction": "origin"
+        }
+      },
+      "dilation": 0.0,
+      "angle": 0.0,
+      "mediaType": 2030,
+      "kp": 3.0
+    },
+    {
+      "name": "square-overcut",
+      "image": "square-4x7.png",
+      "plt": "square-overcut.plt",
+      "expectation": "approx",
+      "note": "default lead-in and lead-out ramps",
+      "config": {
+        "kernel-shape": "morph_ellipse",
+        "filtered-min-area": 1,
+        "circle-fitting": {
+          "enabled": false,
+          "circularity-threshold": 0.03,
+          "num-of-edges": 32
+        },
+        "douglas-peucker": {
+          "enabled": false,
+          "min-epsilon": 0.0001,
+          "max-epsilon": 0.001,
+          "steps": 0,
+          "complexity": {
+            "circumference": 0.6,
+            "curvature": 0.1,
+            "convexity": 0.3,
+            "gradient": 0.5
+          }
+        },
+        "visvalingam-whyatt": {
+          "enabled": false,
+          "max-area": 15
+        },
+        "extension": {
+          "enabled": true,
+          "inner-enabled": true,
+          "max-degree": 45,
+          "max-length": 1.5,
+          "steps": 3
+        },
+        "image": {
+          "margin": 0,
+          "fill-method": "fit",
+          "scale-ratio": 1.0,
+          "binary": {
+            "method": "thresholding",
+            "png-thresholding": true,
+            "threshold": 240,
+            "gaussian-blur": {
+              "enabled": false,
+              "kernel-size": [
+                9,
+                9
+              ]
+            }
+          }
+        },
+        "contours": {
+          "internal": false,
+          "inner-direction": "clockwise",
+          "outter-direction": "origin"
+        }
+      },
+      "dilation": 0.0,
+      "angle": 0.0,
+      "mediaType": 2030,
+      "kp": 1.0
+    },
+    {
+      "name": "square-overcut-wide",
+      "image": "square-4x7.png",
+      "plt": "square-overcut-wide.plt",
+      "expectation": "approx",
+      "note": "four ramp steps at 60 degrees",
+      "config": {
+        "kernel-shape": "morph_ellipse",
+        "filtered-min-area": 1,
+        "circle-fitting": {
+          "enabled": false,
+          "circularity-threshold": 0.03,
+          "num-of-edges": 32
+        },
+        "douglas-peucker": {
+          "enabled": false,
+          "min-epsilon": 0.0001,
+          "max-epsilon": 0.001,
+          "steps": 0,
+          "complexity": {
+            "circumference": 0.6,
+            "curvature": 0.1,
+            "convexity": 0.3,
+            "gradient": 0.5
+          }
+        },
+        "visvalingam-whyatt": {
+          "enabled": false,
+          "max-area": 15
+        },
+        "extension": {
+          "enabled": true,
+          "inner-enabled": true,
+          "max-degree": 60,
+          "max-length": 2.0,
+          "steps": 4
+        },
+        "image": {
+          "margin": 0,
+          "fill-method": "fit",
+          "scale-ratio": 1.0,
+          "binary": {
+            "method": "thresholding",
+            "png-thresholding": true,
+            "threshold": 240,
+            "gaussian-blur": {
+              "enabled": false,
+              "kernel-size": [
+                9,
+                9
+              ]
+            }
+          }
+        },
+        "contours": {
+          "internal": false,
+          "inner-direction": "clockwise",
+          "outter-direction": "origin"
+        }
+      },
+      "dilation": 0.0,
+      "angle": 0.0,
+      "mediaType": 2030,
+      "kp": 1.0
+    },
+    {
+      "name": "fullbleed-4x7-exact",
+      "image": "fullbleed-4x7.png",
+      "plt": "fullbleed-4x7-exact.plt",
+      "expectation": "exact",
+      "note": "sheet-filling source pins the canvas extents",
+      "config": {
+        "kernel-shape": "morph_ellipse",
+        "filtered-min-area": 1,
+        "circle-fitting": {
+          "enabled": false,
+          "circularity-threshold": 0.03,
+          "num-of-edges": 32
+        },
+        "douglas-peucker": {
+          "enabled": false,
+          "min-epsilon": 0.0001,
+          "max-epsilon": 0.001,
+          "steps": 0,
+          "complexity": {
+            "circumference": 0.6,
+            "curvature": 0.1,
+            "convexity": 0.3,
+            "gradient": 0.5
+          }
+        },
+        "visvalingam-whyatt": {
+          "enabled": false,
+          "max-area": 15
+        },
+        "extension": {
+          "enabled": false,
+          "inner-enabled": false,
+          "max-degree": 45,
+          "max-length": 1.5,
+          "steps": 3
+        },
+        "image": {
+          "margin": 0,
+          "fill-method": "fit",
+          "scale-ratio": 1.0,
+          "binary": {
+            "method": "thresholding",
+            "png-thresholding": true,
+            "threshold": 240,
+            "gaussian-blur": {
+              "enabled": false,
+              "kernel-size": [
+                9,
+                9
+              ]
+            }
+          }
+        },
+        "contours": {
+          "internal": false,
+          "inner-direction": "clockwise",
+          "outter-direction": "origin"
+        }
+      },
+      "dilation": 0.0,
+      "angle": 0.0,
+      "mediaType": 2030,
+      "kp": 1.0
+    },
+    {
+      "name": "fullbleed-4x6-exact",
+      "image": "fullbleed-4x6.png",
+      "plt": "fullbleed-4x6-exact.plt",
+      "expectation": "exact",
+      "note": "4x6 source letterboxed onto the 4x7 canvas",
+      "config": {
+        "kernel-shape": "morph_ellipse",
+        "filtered-min-area": 1,
+        "circle-fitting": {
+          "enabled": false,
+          "circularity-threshold": 0.03,
+          "num-of-edges": 32
+        },
+        "douglas-peucker": {
+          "enabled": false,
+          "min-epsilon": 0.0001,
+          "max-epsilon": 0.001,
+          "steps": 0,
+          "complexity": {
+            "circumference": 0.6,
+            "curvature": 0.1,
+            "convexity": 0.3,
+            "gradient": 0.5
+          }
+        },
+        "visvalingam-whyatt": {
+          "enabled": false,
+          "max-area": 15
+        },
+        "extension": {
+          "enabled": false,
+          "inner-enabled": false,
+          "max-degree": 45,
+          "max-length": 1.5,
+          "steps": 3
+        },
+        "image": {
+          "margin": 0,
+          "fill-method": "fit",
+          "scale-ratio": 1.0,
+          "binary": {
+            "method": "thresholding",
+            "png-thresholding": true,
+            "threshold": 240,
+            "gaussian-blur": {
+              "enabled": false,
+              "kernel-size": [
+                9,
+                9
+              ]
+            }
+          }
+        },
+        "contours": {
+          "internal": false,
+          "inner-direction": "clockwise",
+          "outter-direction": "origin"
+        }
+      },
+      "dilation": 0.0,
+      "angle": 0.0,
+      "mediaType": 2030,
+      "kp": 1.0
+    },
+    {
+      "name": "fullbleed-4x6-bleed",
+      "image": "fullbleed-4x6.png",
+      "plt": "fullbleed-4x6-bleed.plt",
+      "expectation": "exact",
+      "note": "stock overscan factor",
+      "config": {
+        "kernel-shape": "morph_ellipse",
+        "filtered-min-area": 1,
+        "circle-fitting": {
+          "enabled": false,
+          "circularity-threshold": 0.03,
+          "num-of-edges": 32
+        },
+        "douglas-peucker": {
+          "enabled": false,
+          "min-epsilon": 0.0001,
+          "max-epsilon": 0.001,
+          "steps": 0,
+          "complexity": {
+            "circumference": 0.6,
+            "curvature": 0.1,
+            "convexity": 0.3,
+            "gradient": 0.5
+          }
+        },
+        "visvalingam-whyatt": {
+          "enabled": false,
+          "max-area": 15
+        },
+        "extension": {
+          "enabled": false,
+          "inner-enabled": false,
+          "max-degree": 45,
+          "max-length": 1.5,
+          "steps": 3
+        },
+        "image": {
+          "margin": 0,
+          "fill-method": "fit",
+          "scale-ratio": 1.01333,
+          "binary": {
+            "method": "thresholding",
+            "png-thresholding": true,
+            "threshold": 240,
+            "gaussian-blur": {
+              "enabled": false,
+              "kernel-size": [
+                9,
+                9
+              ]
+            }
+          }
+        },
+        "contours": {
+          "internal": false,
+          "inner-direction": "clockwise",
+          "outter-direction": "origin"
+        }
+      },
+      "dilation": 0.0,
+      "angle": 0.0,
+      "mediaType": 2030,
+      "kp": 1.0
+    },
+    {
+      "name": "inset-4x6-exact",
+      "image": "inset-4x6.png",
+      "plt": "inset-4x6-exact.plt",
+      "expectation": "exact",
+      "note": "inset rectangle, letterboxed placement",
+      "config": {
+        "kernel-shape": "morph_ellipse",
+        "filtered-min-area": 1,
+        "circle-fitting": {
+          "enabled": false,
+          "circularity-threshold": 0.03,
+          "num-of-edges": 32
+        },
+        "douglas-peucker": {
+          "enabled": false,
+          "min-epsilon": 0.0001,
+          "max-epsilon": 0.001,
+          "steps": 0,
+          "complexity": {
+            "circumference": 0.6,
+            "curvature": 0.1,
+            "convexity": 0.3,
+            "gradient": 0.5
+          }
+        },
+        "visvalingam-whyatt": {
+          "enabled": false,
+          "max-area": 15
+        },
+        "extension": {
+          "enabled": false,
+          "inner-enabled": false,
+          "max-degree": 45,
+          "max-length": 1.5,
+          "steps": 3
+        },
+        "image": {
+          "margin": 0,
+          "fill-method": "fit",
+          "scale-ratio": 1.0,
+          "binary": {
+            "method": "thresholding",
+            "png-thresholding": true,
+            "threshold": 240,
+            "gaussian-blur": {
+              "enabled": false,
+              "kernel-size": [
+                9,
+                9
+              ]
+            }
+          }
+        },
+        "contours": {
+          "internal": false,
+          "inner-direction": "clockwise",
+          "outter-direction": "origin"
+        }
+      },
+      "dilation": 0.0,
+      "angle": 0.0,
+      "mediaType": 2030,
+      "kp": 1.0
+    },
+    {
+      "name": "inset-4x6-fill",
+      "image": "inset-4x6.png",
+      "plt": "inset-4x6-fill.plt",
+      "expectation": "approx",
+      "note": "cover placement crops the source",
+      "config": {
+        "kernel-shape": "morph_ellipse",
+        "filtered-min-area": 1,
+        "circle-fitting": {
+          "enabled": false,
+          "circularity-threshold": 0.03,
+          "num-of-edges": 32
+        },
+        "douglas-peucker": {
+          "enabled": false,
+          "min-epsilon": 0.0001,
+          "max-epsilon": 0.001,
+          "steps": 0,
+          "complexity": {
+            "circumference": 0.6,
+            "curvature": 0.1,
+            "convexity": 0.3,
+            "gradient": 0.5
+          }
+        },
+        "visvalingam-whyatt": {
+          "enabled": false,
+          "max-area": 15
+        },
+        "extension": {
+          "enabled": false,
+          "inner-enabled": false,
+          "max-degree": 45,
+          "max-length": 1.5,
+          "steps": 3
+        },
+        "image": {
+          "margin": 0,
+          "fill-method": "fill",
+          "scale-ratio": 1.0,
+          "binary": {
+            "method": "thresholding",
+            "png-thresholding": true,
+            "threshold": 240,
+            "gaussian-blur": {
+              "enabled": false,
+              "kernel-size": [
+                9,
+                9
+              ]
+            }
+          }
+        },
+        "contours": {
+          "internal": false,
+          "inner-direction": "clockwise",
+          "outter-direction": "origin"
+        }
+      },
+      "dilation": 0.0,
+      "angle": 0.0,
+      "mediaType": 2030,
+      "kp": 1.0
+    },
+    {
+      "name": "opaque-luminance",
+      "image": "opaque-white-bg.png",
+      "plt": "opaque-luminance.plt",
+      "expectation": "exact",
+      "note": "opaque source falls back to luminance thresholding",
+      "config": {
+        "kernel-shape": "morph_ellipse",
+        "filtered-min-area": 1,
+        "circle-fitting": {
+          "enabled": false,
+          "circularity-threshold": 0.03,
+          "num-of-edges": 32
+        },
+        "douglas-peucker": {
+          "enabled": false,
+          "min-epsilon": 0.0001,
+          "max-epsilon": 0.001,
+          "steps": 0,
+          "complexity": {
+            "circumference": 0.6,
+            "curvature": 0.1,
+            "convexity": 0.3,
+            "gradient": 0.5
+          }
+        },
+        "visvalingam-whyatt": {
+          "enabled": false,
+          "max-area": 15
+        },
+        "extension": {
+          "enabled": false,
+          "inner-enabled": false,
+          "max-degree": 45,
+          "max-length": 1.5,
+          "steps": 3
+        },
+        "image": {
+          "margin": 0,
+          "fill-method": "fit",
+          "scale-ratio": 1.0,
+          "binary": {
+            "method": "thresholding",
+            "png-thresholding": true,
+            "threshold": 240,
+            "gaussian-blur": {
+              "enabled": false,
+              "kernel-size": [
+                9,
+                9
+              ]
+            }
+          }
+        },
+        "contours": {
+          "internal": false,
+          "inner-direction": "clockwise",
+          "outter-direction": "origin"
+        }
+      },
+      "dilation": 0.0,
+      "angle": 0.0,
+      "mediaType": 2030,
+      "kp": 1.0
+    },
+    {
+      "name": "circle",
+      "image": "circle-4x7.png",
+      "plt": "circle.plt",
+      "expectation": "approx",
+      "note": "curved boundary, tracing differences show up here",
+      "config": {
+        "kernel-shape": "morph_ellipse",
+        "filtered-min-area": 1,
+        "circle-fitting": {
+          "enabled": false,
+          "circularity-threshold": 0.03,
+          "num-of-edges": 32
+        },
+        "douglas-peucker": {
+          "enabled": false,
+          "min-epsilon": 0.0001,
+          "max-epsilon": 0.001,
+          "steps": 0,
+          "complexity": {
+            "circumference": 0.6,
+            "curvature": 0.1,
+            "convexity": 0.3,
+            "gradient": 0.5
+          }
+        },
+        "visvalingam-whyatt": {
+          "enabled": false,
+          "max-area": 15
+        },
+        "extension": {
+          "enabled": false,
+          "inner-enabled": false,
+          "max-degree": 45,
+          "max-length": 1.5,
+          "steps": 3
+        },
+        "image": {
+          "margin": 0,
+          "fill-method": "fit",
+          "scale-ratio": 1.0,
+          "binary": {
+            "method": "thresholding",
+            "png-thresholding": true,
+            "threshold": 240,
+            "gaussian-blur": {
+              "enabled": false,
+              "kernel-size": [
+                9,
+                9
+              ]
+            }
+          }
+        },
+        "contours": {
+          "internal": false,
+          "inner-direction": "clockwise",
+          "outter-direction": "origin"
+        }
+      },
+      "dilation": 0.0,
+      "angle": 0.0,
+      "mediaType": 2030,
+      "kp": 1.0
+    },
+    {
+      "name": "circle-vw-dp",
+      "image": "circle-4x7.png",
+      "plt": "circle-vw-dp.plt",
+      "expectation": "loose",
+      "note": "both simplification passes enabled",
+      "config": {
+        "kernel-shape": "morph_ellipse",
+        "filtered-min-area": 1,
+        "circle-fitting": {
+          "enabled": false,
+          "circularity-threshold": 0.03,
+          "num-of-edges": 32
+        },
+        "douglas-peucker": {
+          "enabled": true,
+          "min-epsilon": 0.0001,
+          "max-epsilon": 0.001,
+          "steps": 0,
+          "complexity": {
+            "circumference": 0.6,
+            "curvature": 0.1,
+            "convexity": 0.3,
+            "gradient": 0.5
+          }
+        },
+        "visvalingam-whyatt": {
+          "enabled": true,
+          "max-area": 15
+        },
+        "extension": {
+          "enabled": false,
+          "inner-enabled": false,
+          "max-degree": 45,
+          "max-length": 1.5,
+          "steps": 3
+        },
+        "image": {
+          "margin": 0,
+          "fill-method": "fit",
+          "scale-ratio": 1.0,
+          "binary": {
+            "method": "thresholding",
+            "png-thresholding": true,
+            "threshold": 240,
+            "gaussian-blur": {
+              "enabled": false,
+              "kernel-size": [
+                9,
+                9
+              ]
+            }
+          }
+        },
+        "contours": {
+          "internal": false,
+          "inner-direction": "clockwise",
+          "outter-direction": "origin"
+        }
+      },
+      "dilation": 0.0,
+      "angle": 0.0,
+      "mediaType": 2030,
+      "kp": 1.0
+    },
+    {
+      "name": "ring-holes",
+      "image": "ring-4x7.png",
+      "plt": "ring-holes.plt",
+      "expectation": "approx",
+      "note": "hole boundary emitted as a second path",
+      "config": {
+        "kernel-shape": "morph_ellipse",
+        "filtered-min-area": 1,
+        "circle-fitting": {
+          "enabled": false,
+          "circularity-threshold": 0.03,
+          "num-of-edges": 32
+        },
+        "douglas-peucker": {
+          "enabled": false,
+          "min-epsilon": 0.0001,
+          "max-epsilon": 0.001,
+          "steps": 0,
+          "complexity": {
+            "circumference": 0.6,
+            "curvature": 0.1,
+            "convexity": 0.3,
+            "gradient": 0.5
+          }
+        },
+        "visvalingam-whyatt": {
+          "enabled": false,
+          "max-area": 15
+        },
+        "extension": {
+          "enabled": false,
+          "inner-enabled": false,
+          "max-degree": 45,
+          "max-length": 1.5,
+          "steps": 3
+        },
+        "image": {
+          "margin": 0,
+          "fill-method": "fit",
+          "scale-ratio": 1.0,
+          "binary": {
+            "method": "thresholding",
+            "png-thresholding": true,
+            "threshold": 240,
+            "gaussian-blur": {
+              "enabled": false,
+              "kernel-size": [
+                9,
+                9
+              ]
+            }
+          }
+        },
+        "contours": {
+          "internal": true,
+          "inner-direction": "clockwise",
+          "outter-direction": "origin"
+        }
+      },
+      "dilation": 0.0,
+      "angle": 0.0,
+      "mediaType": 2030,
+      "kp": 1.0
+    },
+    {
+      "name": "two-shapes",
+      "image": "two-shapes.png",
+      "plt": "two-shapes.plt",
+      "expectation": "approx",
+      "note": "two regions, largest first",
+      "config": {
+        "kernel-shape": "morph_ellipse",
+        "filtered-min-area": 1,
+        "circle-fitting": {
+          "enabled": false,
+          "circularity-threshold": 0.03,
+          "num-of-edges": 32
+        },
+        "douglas-peucker": {
+          "enabled": false,
+          "min-epsilon": 0.0001,
+          "max-epsilon": 0.001,
+          "steps": 0,
+          "complexity": {
+            "circumference": 0.6,
+            "curvature": 0.1,
+            "convexity": 0.3,
+            "gradient": 0.5
+          }
+        },
+        "visvalingam-whyatt": {
+          "enabled": false,
+          "max-area": 15
+        },
+        "extension": {
+          "enabled": false,
+          "inner-enabled": false,
+          "max-degree": 45,
+          "max-length": 1.5,
+          "steps": 3
+        },
+        "image": {
+          "margin": 0,
+          "fill-method": "fit",
+          "scale-ratio": 1.0,
+          "binary": {
+            "method": "thresholding",
+            "png-thresholding": true,
+            "threshold": 240,
+            "gaussian-blur": {
+              "enabled": false,
+              "kernel-size": [
+                9,
+                9
+              ]
+            }
+          }
+        },
+        "contours": {
+          "internal": false,
+          "inner-direction": "clockwise",
+          "outter-direction": "origin"
+        }
+      },
+      "dilation": 0.0,
+      "angle": 0.0,
+      "mediaType": 2030,
+      "kp": 1.0
+    },
+    {
+      "name": "dilated",
+      "image": "square-4x7.png",
+      "plt": "dilated.plt",
+      "expectation": "approx",
+      "note": "mask dilation widens the cut margin",
+      "config": {
+        "kernel-shape": "morph_ellipse",
+        "filtered-min-area": 1,
+        "circle-fitting": {
+          "enabled": false,
+          "circularity-threshold": 0.03,
+          "num-of-edges": 32
+        },
+        "douglas-peucker": {
+          "enabled": false,
+          "min-epsilon": 0.0001,
+          "max-epsilon": 0.001,
+          "steps": 0,
+          "complexity": {
+            "circumference": 0.6,
+            "curvature": 0.1,
+            "convexity": 0.3,
+            "gradient": 0.5
+          }
+        },
+        "visvalingam-whyatt": {
+          "enabled": false,
+          "max-area": 15
+        },
+        "extension": {
+          "enabled": false,
+          "inner-enabled": false,
+          "max-degree": 45,
+          "max-length": 1.5,
+          "steps": 3
+        },
+        "image": {
+          "margin": 0,
+          "fill-method": "fit",
+          "scale-ratio": 1.0,
+          "binary": {
+            "method": "thresholding",
+            "png-thresholding": true,
+            "threshold": 240,
+            "gaussian-blur": {
+              "enabled": false,
+              "kernel-size": [
+                9,
+                9
+              ]
+            }
+          }
+        },
+        "contours": {
+          "internal": false,
+          "inner-direction": "clockwise",
+          "outter-direction": "origin"
+        }
+      },
+      "dilation": 12.0,
+      "angle": 0.0,
+      "mediaType": 2030,
+      "kp": 1.0
+    },
+    {
+      "name": "rotated-90",
+      "image": "square-4x7.png",
+      "plt": "rotated-90.plt",
+      "expectation": "approx",
+      "note": "path rotated about the sheet centre",
+      "config": {
+        "kernel-shape": "morph_ellipse",
+        "filtered-min-area": 1,
+        "circle-fitting": {
+          "enabled": false,
+          "circularity-threshold": 0.03,
+          "num-of-edges": 32
+        },
+        "douglas-peucker": {
+          "enabled": false,
+          "min-epsilon": 0.0001,
+          "max-epsilon": 0.001,
+          "steps": 0,
+          "complexity": {
+            "circumference": 0.6,
+            "curvature": 0.1,
+            "convexity": 0.3,
+            "gradient": 0.5
+          }
+        },
+        "visvalingam-whyatt": {
+          "enabled": false,
+          "max-area": 15
+        },
+        "extension": {
+          "enabled": false,
+          "inner-enabled": false,
+          "max-degree": 45,
+          "max-length": 1.5,
+          "steps": 3
+        },
+        "image": {
+          "margin": 0,
+          "fill-method": "fit",
+          "scale-ratio": 1.0,
+          "binary": {
+            "method": "thresholding",
+            "png-thresholding": true,
+            "threshold": 240,
+            "gaussian-blur": {
+              "enabled": false,
+              "kernel-size": [
+                9,
+                9
+              ]
+            }
+          }
+        },
+        "contours": {
+          "internal": false,
+          "inner-direction": "clockwise",
+          "outter-direction": "origin"
+        }
+      },
+      "dilation": 0.0,
+      "angle": 90.0,
+      "mediaType": 2030,
+      "kp": 1.0
+    },
+    {
+      "name": "small-source",
+      "image": "small-source.png",
+      "plt": "small-source.plt",
+      "expectation": "approx",
+      "note": "source scaled up; raster resize widens edges by up to one grid pixel",
+      "config": {
+        "kernel-shape": "morph_ellipse",
+        "filtered-min-area": 1,
+        "circle-fitting": {
+          "enabled": false,
+          "circularity-threshold": 0.03,
+          "num-of-edges": 32
+        },
+        "douglas-peucker": {
+          "enabled": false,
+          "min-epsilon": 0.0001,
+          "max-epsilon": 0.001,
+          "steps": 0,
+          "complexity": {
+            "circumference": 0.6,
+            "curvature": 0.1,
+            "convexity": 0.3,
+            "gradient": 0.5
+          }
+        },
+        "visvalingam-whyatt": {
+          "enabled": false,
+          "max-area": 15
+        },
+        "extension": {
+          "enabled": false,
+          "inner-enabled": false,
+          "max-degree": 45,
+          "max-length": 1.5,
+          "steps": 3
+        },
+        "image": {
+          "margin": 0,
+          "fill-method": "fit",
+          "scale-ratio": 1.0,
+          "binary": {
+            "method": "thresholding",
+            "png-thresholding": true,
+            "threshold": 240,
+            "gaussian-blur": {
+              "enabled": false,
+              "kernel-size": [
+                9,
+                9
+              ]
+            }
+          }
+        },
+        "contours": {
+          "internal": false,
+          "inner-direction": "clockwise",
+          "outter-direction": "origin"
+        }
+      },
+      "dilation": 0.0,
+      "angle": 0.0,
+      "mediaType": 2030,
+      "kp": 1.0
+    }
+  ]
+}

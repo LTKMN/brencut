@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#000000">
+<title>BrenCut</title>
+<style>
+:root { --a: 168,139,250; --d: 3,7,18; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: rgb(var(--d)); color: rgb(var(--a));
+  font: 13px/1.45 'SF Mono', ui-monospace, 'Cascadia Code', 'Fira Code', Menlo, Monaco, Consolas, monospace;
+  display: grid; grid-template-rows: auto 1fr; overflow: hidden;
+}
+button, input, select { font: inherit; color: inherit; }
+header {
+  display: flex; align-items: center; gap: 16px; padding: 10px 16px;
+  border-bottom: 1px solid rgba(var(--a), .25);
+}
+header h1 { font-size: 14px; letter-spacing: .25em; margin: 0; font-weight: 700; }
+header .sub { opacity: .55; }
+header .spacer { flex: 1; }
+.pill { display: inline-flex; align-items: center; gap: 8px; padding: 3px 10px; border: 1px solid rgba(var(--a), .4); border-radius: 999px; }
+.pill .dot { width: 8px; height: 8px; border-radius: 50%; border: 1px solid rgb(var(--a)); }
+.pill.on .dot { background: rgb(var(--a)); }
+.pill.busy .dot { background: rgb(var(--a)); animation: blink 1s steps(2) infinite; }
+@keyframes blink { 50% { opacity: .2; } }
+
+main { display: grid; grid-template-columns: 1fr 360px; min-height: 0; }
+#stage { position: relative; display: grid; place-items: center; padding: 20px; min-height: 0; overflow: hidden; }
+#sheetWrap { position: relative; width: min(100%, (100dvh - 110px) * 4 / 7); aspect-ratio: 4 / 7; }
+#sheet { width: 100%; height: 100%; display: block; touch-action: none; box-shadow: 0 0 0 1px rgba(var(--a), .5), 0 12px 40px rgba(0,0,0,.5); }
+#stage.drag #sheet { box-shadow: 0 0 0 3px rgb(var(--a)); }
+.ruler { position: absolute; font-size: 11px; opacity: .55; white-space: nowrap; }
+.ruler.w { top: -18px; left: 0; right: 0; text-align: center; }
+.ruler.h { right: 100%; margin-right: 4px; top: 0; bottom: 0; writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; }
+#empty {
+  position: absolute; inset: 0; display: grid; place-items: center; text-align: center; pointer-events: none;
+  color: rgb(var(--d)); opacity: .6;
+}
+
+aside { border-left: 1px solid rgba(var(--a), .25); overflow-y: auto; padding: 4px 0 24px; }
+section { padding: 12px 16px; border-bottom: 1px solid rgba(var(--a), .15); }
+section h2 { font-size: 11px; letter-spacing: .2em; margin: 0 0 10px; font-weight: 700; opacity: .7; display: flex; justify-content: space-between; }
+.row { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+.row label { flex: 1; }
+.muted { opacity: .55; }
+.small { font-size: 11px; }
+
+.btn {
+  background: transparent; border: 1px solid rgba(var(--a), .55); border-radius: 4px; padding: 6px 10px; cursor: pointer;
+}
+.btn:hover:not(:disabled) { background: rgba(var(--a), .12); }
+.btn:focus-visible, input:focus-visible { outline: 2px solid rgb(var(--a)); outline-offset: 1px; }
+.btn:disabled { opacity: .35; cursor: not-allowed; }
+.btn.primary { background: rgb(var(--a)); color: rgb(var(--d)); border-color: rgb(var(--a)); font-weight: 700; }
+.btn.primary:hover:not(:disabled) { background: rgba(var(--a), .85); }
+.btn.icon { padding: 2px 7px; border-color: rgba(var(--a), .3); }
+.btn.wide { width: 100%; padding: 10px; }
+.btns { display: flex; gap: 6px; flex-wrap: wrap; }
+.btns .btn { flex: 1; }
+
+input[type=number] {
+  width: 64px; background: rgba(var(--a), .06); border: 1px solid rgba(var(--a), .35); border-radius: 3px; padding: 3px 5px; text-align: right;
+}
+input[type=range] { flex: 1; accent-color: rgb(var(--a)); }
+input[type=checkbox] { accent-color: rgb(var(--a)); }
+
+#list { list-style: none; margin: 0; padding: 0; }
+#list li {
+  display: grid; grid-template-columns: 34px 1fr auto; gap: 6px; align-items: center;
+  padding: 6px; border: 1px solid transparent; border-radius: 4px; cursor: pointer;
+}
+#list li.sel { border-color: rgb(var(--a)); background: rgba(var(--a), .08); }
+#list li canvas { width: 34px; height: 34px; background: rgba(var(--a), .1); border-radius: 2px; }
+#list .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#list .dims { display: flex; align-items: center; gap: 4px; margin-top: 2px; }
+#list .dims input { width: 62px; }
+#list .acts { display: flex; gap: 3px; }
+
+#progress { height: 4px; background: rgba(var(--a), .15); border-radius: 2px; overflow: hidden; margin: 10px 0 4px; }
+#progress > div { height: 100%; width: 0; background: rgb(var(--a)); transition: width .2s; }
+#log { margin: 8px 0 0; max-height: 140px; overflow-y: auto; font-size: 11px; opacity: .75; white-space: pre-wrap; }
+.warn { border: 1px solid rgb(var(--a)); border-radius: 4px; padding: 8px 10px; margin-top: 8px; }
+.kbd { opacity: .55; font-size: 11px; line-height: 1.7; }
+
+@media (max-width: 760px) {
+  body { overflow: auto; grid-template-rows: auto auto; }
+  main { grid-template-columns: 1fr; }
+  #stage { height: auto; }
+  #sheetWrap { width: min(100%, 72dvh * 4 / 7); }
+  aside { border-left: 0; border-top: 1px solid rgba(var(--a), .25); }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>BRENCUT</h1><span class="sub">png &rarr; print &amp; cut &middot; Liene PixCut S1</span>
+  <span class="spacer"></span>
+  <span id="printerPill" class="pill"><span class="dot"></span><span id="printerText">no printer</span></span>
+  <button id="connectBtn" class="btn">connect</button>
+</header>
+<main>
+  <div id="stage">
+    <div id="sheetWrap">
+      <div class="ruler w">4 in &middot; 101.6 mm</div>
+      <div class="ruler h">7 in &middot; 177.8 mm</div>
+      <canvas id="sheet" width="1200" height="2100" tabindex="0" aria-label="sticker sheet"></canvas>
+      <div id="empty">drop PNGs here<br>(transparency = cut line)<br><br>or paste &middot; or &#9650; add</div>
+    </div>
+  </div>
+  <aside>
+    <section>
+      <h2>STICKERS <span id="count" class="muted"></span></h2>
+      <div class="btns">
+        <button id="addBtn" class="btn">&#9650; add png</button>
+        <button id="arrangeBtn" class="btn">&#9638; arrange</button>
+        <button id="clearBtn" class="btn">&#9675; clear</button>
+      </div>
+      <input id="file" type="file" accept="image/png,image/webp,image/gif" multiple hidden>
+      <ul id="list"></ul>
+    </section>
+    <section>
+      <h2>CUT</h2>
+      <div class="row"><label for="margin">border around art</label><input id="margin" type="number" min="0" max="10" step="0.5"> mm</div>
+      <div class="row"><input id="marginRange" type="range" min="0" max="6" step="0.5" aria-label="border"></div>
+      <div class="row"><label for="kp">knife pressure</label><input id="kp" type="number" min="0" max="99" step="1"></div>
+      <div class="row"><label for="holes">also cut inner holes</label><input id="holes" type="checkbox"></div>
+      <div class="row"><label for="showCut">show cut line</label><input id="showCut" type="checkbox" checked></div>
+      <div id="cutStats" class="small muted"></div>
+    </section>
+    <section>
+      <h2>OUTPUT</h2>
+      <button id="printBtn" class="btn primary wide" disabled>&#9654; print &amp; cut</button>
+      <div class="btns" style="margin-top:6px">
+        <button id="cancelBtn" class="btn" hidden>&#9632; cancel job</button>
+        <button id="jpgBtn" class="btn" disabled>&darr; .jpg</button>
+        <button id="pltBtn" class="btn" disabled>&darr; .plt</button>
+      </div>
+      <div id="progress"><div></div></div>
+      <div id="jobText" class="small"></div>
+      <div id="usbNote" class="warn small" hidden></div>
+      <pre id="log"></pre>
+    </section>
+    <section>
+      <h2>KEYS</h2>
+      <div class="kbd">drag to move &middot; corner to resize<br>arrows nudge 1 mm (shift 5 mm)<br>R rotate &middot; D duplicate &middot; del remove<br>ctrl+V paste an image</div>
+    </section>
+  </aside>
+</main>
+<!--APP-->
+</body>
+</html>
