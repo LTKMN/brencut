@@ -1,22 +1,23 @@
 {
   "name": "brencut",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Print and kiss-cut transparent PNG sticker sheets on a Liene PixCut S1, straight from the browser over WebUSB",
   "scripts": {
     "test": "node --test test/*.test.mjs",
     "build": "node build.mjs",
     "dev": "node build.mjs --serve"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "type": "module",
-  "dependencies": {
-    "usb": "^2.14.0"
-  },
   "devDependencies": {
     "esbuild": "^0.25.10",
-    "puppeteer-core": "^24.22.3"
-  }
+    "puppeteer-core": "^24.22.3",
+    "usb": "^2.14.0"
+  },
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LTKMN/brencut.git"
+  },
+  "homepage": "https://brencut.brennan.computer"
 }
