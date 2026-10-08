@@ -3,6 +3,8 @@
 Browser app that turns transparent PNGs into a print-and-cut sticker sheet and sends it straight to a
 **Liene PixCut S1** over WebUSB. No vendor app needed. Ships as one self-contained `dist/index.html`
 (built by `node build.mjs`; `npm run dev` serves it on http://localhost:5174 and rebuilds on reload).
+Live at https://brencut.brennan.computer (Netlify site `a98f251a-5e90-4070-bb62-e47b1b116bc1`):
+`node build.mjs && npx netlify deploy --prod --dir=dist`.
 
 ## Layout
 
