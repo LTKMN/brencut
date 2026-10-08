@@ -28,6 +28,8 @@ Live at https://brencut.brennan.computer (Netlify site `a98f251a-5e90-4070-bb62-
 
 (Settled 2026-10-08: knife pressure is 1-100 and the official sticker value is 42. On our printer KP1
 never lowered the blade, while printing and cut-path placement both worked on the first real sheet.)
+KP42 cuts cleanly but nearly through: the cuts show from the back of the backing. Next: try 41, then 40,
+and make the default the lowest value that still peels cleanly.
 
 - `get-prop media-size` reported 5009 with the printer asleep; unknown whether that reflects loaded paper.
 
