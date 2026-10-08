@@ -24,7 +24,9 @@ Browser app that turns transparent PNGs into a print-and-cut sticker sheet and s
 
 ## Open questions
 
-- Knife pressure: stock generator writes KP1 (range 0-3 per honeymaro); popcornhax cuts with KP42. Default 1.
+(Settled 2026-10-08: knife pressure is 1-100 and the official sticker value is 42. On our printer KP1
+never lowered the blade, while printing and cut-path placement both worked on the first real sheet.)
+
 - `get-prop media-size` reported 5009 with the printer asleep; unknown whether that reflects loaded paper.
 
 ## Conventions

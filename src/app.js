@@ -38,7 +38,7 @@ const store = {
 };
 const settings = {
   marginMm: store.get('marginMm', CUT_DEFAULTS.marginMm),
-  knifePressure: store.get('knifePressure', CUT_DEFAULTS.knifePressure),
+  knifePressure: store.get('kp', CUT_DEFAULTS.knifePressure), // key renamed when the default moved 1 -> 42
   cutHoles: store.get('cutHoles', CUT_DEFAULTS.cutHoles),
   showCut: store.get('showCut', true),
 };
@@ -438,9 +438,9 @@ marginIn.onchange = () => setMargin(marginIn.value);
 marginRange.oninput = () => setMargin(marginRange.value);
 $('kp').value = settings.knifePressure;
 $('kp').onchange = () => {
-  settings.knifePressure = Math.max(0, Math.min(99, Math.round(+$('kp').value || 0)));
+  settings.knifePressure = Math.max(1, Math.min(100, Math.round(+$('kp').value || 42)));
   $('kp').value = settings.knifePressure;
-  store.set('knifePressure', settings.knifePressure);
+  store.set('kp', settings.knifePressure);
   scheduleTrace(0);
 };
 $('holes').checked = settings.cutHoles;

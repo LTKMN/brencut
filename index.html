@@ -127,7 +127,7 @@ input[type=checkbox] { accent-color: rgb(var(--a)); }
       <h2>CUT</h2>
       <div class="row"><label for="margin">border around art</label><input id="margin" type="number" min="0" max="10" step="0.5"> mm</div>
       <div class="row"><input id="marginRange" type="range" min="0" max="6" step="0.5" aria-label="border"></div>
-      <div class="row"><label for="kp">knife pressure</label><input id="kp" type="number" min="0" max="99" step="1"></div>
+      <div class="row"><label for="kp">knife pressure</label><input id="kp" type="number" min="1" max="100" step="1" title="1-100; 42 is the official sticker setting"></div>
       <div class="row"><label for="holes">also cut inner holes</label><input id="holes" type="checkbox"></div>
       <div class="row"><label for="showCut">show cut line</label><input id="showCut" type="checkbox" checked></div>
       <div id="cutStats" class="small muted"></div>

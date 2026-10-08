@@ -4,9 +4,9 @@ import { SHEET } from './protocol.js';
 
 export const CUT_DEFAULTS = {
   marginMm: 1.5, // white border grown around each sticker's opaque pixels
-  // Knife pressure. The vendor generator writes KP1 by default (0..3); popcornhax's
-  // hardware-tested kiss cuts use 42. Unverified on this printer; keep it a setting.
-  knifePressure: 1,
+  // Knife pressure, 1..100. The official app sends 42 for Liene sticker media (per popcornhax);
+  // verified on our printer 2026-10-08: KP1 never lowers the blade.
+  knifePressure: 42,
   cutHoles: false, // also cut along transparent holes inside a sticker
   alphaThreshold: 128,
 };

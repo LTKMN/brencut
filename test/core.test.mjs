@@ -60,7 +60,7 @@ test('traceSheet: square sticker gives one closed path inside the 4x7 canvas, wi
   const tight = traceSheet(img, { marginMm: 0 });
   const wide = traceSheet(img, { marginMm: 2 });
   for (const r of [tight, wide]) {
-    assert.match(r.plt, /^IN VER0\.1\.0 KP1 U/);
+    assert.match(r.plt, /^IN VER0\.1\.0 KP42 U/);
     assert.match(r.plt, / U6476,0 {2}@ $/);
     const doc = parsePlt(r.plt);
     assert.equal(doc.paths.length, 1);
@@ -82,7 +82,7 @@ test('traceSheet: empty sheet gives no cut', () => {
 });
 
 test('traceSheet: knife pressure reaches the header', () => {
-  assert.match(traceSheet(png('square-4x7.png'), { knifePressure: 3 }).plt, /^IN VER0\.1\.0 KP3 /);
+  assert.match(traceSheet(png('square-4x7.png'), { knifePressure: 55 }).plt, /^IN VER0\.1\.0 KP55 /);
 });
 
 test('padToRaster centres the sheet on white at 8,14', () => {
