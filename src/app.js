@@ -82,7 +82,7 @@ function fitScale(k) {
 
 function arrange() {
   const gap = gapPx();
-  const order = [...stickers].sort((a, b) => bbox(b).h - bbox(a).h);
+  const order = stickers.filter((k) => !k.sheet).sort((a, b) => bbox(b).h - bbox(a).h);
   let x = EDGE, y = EDGE, rowH = 0, overflow = 0;
   for (const k of order) {
     const b = bbox(k);
@@ -140,12 +140,29 @@ async function addFiles(files) {
     if (!f.type.startsWith('image/')) continue;
     try {
       const buf = await f.arrayBuffer();
-      const src = await createImageBitmap(new Blob([buf], { type: f.type }));
+      let src = await createImageBitmap(new Blob([buf], { type: f.type }));
+      const name = f.name.replace(/\.[^.]+$/, '') || 'pasted';
+      // A whole 4x7 sheet (either orientation) is placed exactly as drawn: no trim, no repacking.
+      if (src.width === SHEET.rasterW && src.height === SHEET.rasterH) {
+        src = await createImageBitmap(src, SHEET.padX, SHEET.padY, SHEET.w, SHEET.h); // already padded: drop it
+      }
+      const aspect = src.width / src.height;
+      const land = Math.abs(aspect - 7 / 4) < 0.01;
+      if ((land || Math.abs(aspect - 4 / 7) < 0.01) && Math.max(src.width, src.height) >= 700) {
+        const k = { id: nextId++, name, bmp: src, sw: src.width, sh: src.height, s: SHEET.h / Math.max(src.width, src.height), rot: land ? 1 : 0, x: 0, y: 0, sheet: true };
+        const t = await trimmed(src);
+        if (!t) { log(`${f.name}: fully transparent, skipped`); continue; }
+        if (t.opaque) log(`${f.name}: full sheet with no transparency, so the cut is the whole sheet; use a transparent background`);
+        else log(`${f.name}: full 4×7 sheet, placed as drawn${land ? ' (rotated to portrait)' : ''}`);
+        stickers.push(k);
+        selected = k;
+        continue;
+      }
       const t = await trimmed(src);
       if (!t) { log(`${f.name}: fully transparent, skipped`); continue; }
       if (t.opaque) log(`${f.name}: no transparency, so it cuts as a rectangle`);
       const dpi = pngDpi(buf) ?? 300;
-      const k = { id: nextId++, name: f.name.replace(/\.[^.]+$/, '') || 'pasted', bmp: t.bmp, sw: t.w, sh: t.h, s: 300 / dpi, rot: 0, x: 0, y: 0 };
+      const k = { id: nextId++, name, bmp: t.bmp, sw: t.w, sh: t.h, s: 300 / dpi, rot: 0, x: 0, y: 0 };
       fitScale(k);
       const b = bbox(k);
       const spot = findSpot(b.w, b.h, stickers);
