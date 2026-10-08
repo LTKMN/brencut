@@ -3,15 +3,15 @@
 **https://brencut.brennan.computer**
 
 Print and kiss-cut sticker sheets on a **Liene PixCut S1**, straight from the browser over USB, with no
-vendor app. Drop in transparent PNGs, arrange them on the 4×7 in sheet, press print & cut. The cut line
-follows each image's transparency, plus a white border you choose.
+vendor app. No accounts, no logins, no ads, no nothing. Drop in transparent PNGs, arrange them on the 4×7 in sheet, press print & cut. The cut line
+follows each image's transparency, plus a white border with adjustable thickness.
 
 ## Use
 
 1. Plug the PixCut S1 in over USB and open BrenCut in **Chrome or Edge** (any Chromium browser; WebUSB is
    needed to reach the printer). Firefox and Safari can lay out a sheet and download the `.jpg` + `.plt`
-   but can't print.
-2. Click **connect** and pick the printer.
+   but CANNOT PRINT. Sorry! This is their fault.
+2. Click **connect** (top right) and pick the printer.
 3. Add PNGs (drop, paste or pick). Either:
    - **separate stickers**: each is trimmed to its art and sized from its DPI (300 if unset); drag,
      resize, rotate, duplicate, or hit **arrange**; or
@@ -19,13 +19,14 @@ follows each image's transparency, plus a white border you choose.
      transparent background, keep art ~5 mm from the edges and ~5 mm between stickers.
 4. Set the border and knife pressure, then **print & cut**.
 
-**Knife pressure** runs 1–100. The official app uses 42 for Liene sticker paper; on our printer 42 cuts
-cleanly but nearly through the backing, so you may want to try 40–41. 1 doesn't lower the blade at all.
+**Knife pressure** runs 1–100. The official app uses 42 for Liene sticker paper so that's our default.
 
 Windows needs no driver install: the printer's control and data interfaces come up on WinUSB.
 Only one program can hold the printer at a time, so close the Liene app (or another BrenCut tab) first.
 
 ## Develop
+
+Live version is at **https://brencut.brennan.computer**
 
 ```sh
 npm install
@@ -50,4 +51,4 @@ the hardware this works with. Use at your own risk.
 
 ## License
 
-MIT
+MIT. Please reach out with ideas and feature requests. Please don't just fork this and charge money or add ads or whatever, your mother will be very disappointed in you. This is free software.
