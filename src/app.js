@@ -189,7 +189,7 @@ async function addFiles(files) {
       const aspect = src.width / src.height;
       const land = Math.abs(aspect - 7 / 4) < 0.01;
       if ((land || Math.abs(aspect - 4 / 7) < 0.01) && Math.max(src.width, src.height) >= 700) {
-        const k = { id: nextId++, name, bmp: src, sw: src.width, sh: src.height, s: SHEET.h / Math.max(src.width, src.height), rot: land ? 1 : 0, x: 0, y: 0, sheet: true };
+        const k = { id: nextId++, name, bmp: src, sw: src.width, sh: src.height, s: SHEET.h / Math.max(src.width, src.height), s0: SHEET.h / Math.max(src.width, src.height), rot: land ? 1 : 0, x: 0, y: 0, sheet: true };
         const t = await trimmed(src);
         if (!t) { log(`${f.name}: fully transparent, skipped`); continue; }
         if (t.opaque) log(`${f.name}: full sheet with no transparency, so the cut is the whole sheet; use a transparent background`);
@@ -202,7 +202,7 @@ async function addFiles(files) {
       if (!t) { log(`${f.name}: fully transparent, skipped`); continue; }
       if (t.opaque) log(`${f.name}: no transparency, so it cuts as a rectangle`);
       const dpi = pngDpi(buf) ?? 300;
-      const k = { id: nextId++, name, bmp: t.bmp, sw: t.w, sh: t.h, s: 300 / dpi, rot: 0, x: 0, y: 0 };
+      const k = { id: nextId++, name, bmp: t.bmp, sw: t.w, sh: t.h, s: 300 / dpi, s0: 300 / dpi, rot: 0, x: 0, y: 0 };
       fitScale(k);
       const b = bbox(k);
       const spot = findSpot(b.w, b.h, stickers);
@@ -223,16 +223,60 @@ const vg = view.getContext('2d');
 const comp = new OffscreenCanvas(SHEET.w, SHEET.h);
 const cg = comp.getContext('2d', { willReadFrequently: true });
 
-function drawStickers(g) {
+/**
+ * The sticker pre-scaled to its size on the sheet. Sources can be thousands of px; resampling them on
+ * every pointer move (and, on GPU canvases, re-uploading them) is what made dragging crawl. While a
+ * resize drag is changing the scale, the last sprite is stretched instead of rebuilt each frame.
+ */
+function sprite(k, allowStale) {
+  const sp = k.sprite;
+  if (sp && sp.bmp === k.bmp && (sp.s === k.s || allowStale)) return sp;
+  const w = k.sw * k.s, h = k.sh * k.s;
+  const c = new OffscreenCanvas(Math.max(1, Math.ceil(w)), Math.max(1, Math.ceil(h)));
+  const g = c.getContext('2d');
+  g.imageSmoothingQuality = 'high';
+  g.drawImage(k.bmp, 0, 0, w, h);
+  k.sprite = { bmp: k.bmp, s: k.s, w, h, img: c.transferToImageBitmap() }; // new object: duplicates share the old one
+  return k.sprite;
+}
+
+/** fast: draw cached sprites (screen preview); otherwise resample the full-res source (print raster). */
+function drawStickers(g, fast) {
   for (const k of stickers) {
     const b = bbox(k);
+    const w = k.sw * k.s, h = k.sh * k.s;
     g.save();
     g.translate(k.x + b.w / 2, k.y + b.h / 2);
     g.rotate((k.rot * Math.PI) / 2);
     g.imageSmoothingQuality = 'high';
-    g.drawImage(k.bmp, (-k.sw * k.s) / 2, (-k.sh * k.s) / 2, k.sw * k.s, k.sh * k.s);
+    if (fast) {
+      const sp = sprite(k, drag?.mode === 'resize' && drag.k === k);
+      g.drawImage(sp.img, 0, 0, sp.w, sp.h, -w / 2, -h / 2, w, h);
+    } else {
+      g.drawImage(k.bmp, -w / 2, -h / 2, w, h);
+    }
     g.restore();
   }
+}
+
+let cutPath = null; // Path2D of the cut overlay, rebuilt only when the cut or the holes setting changes
+function getCutPath() {
+  if (cutPath?.cut === cut && cutPath.holes === settings.cutHoles) return cutPath.path;
+  const path = new Path2D();
+  for (const c of cut.contours) {
+    for (const poly of [c.outer, ...(settings.cutHoles ? c.inners : [])]) {
+      poly.forEach((p, i) => (i ? path.lineTo(p.x + 0.5, p.y + 0.5) : path.moveTo(p.x + 0.5, p.y + 0.5)));
+      path.closePath();
+    }
+  }
+  cutPath = { cut, holes: settings.cutHoles, path };
+  return path;
+}
+
+/** Coalesce redraws to one per frame. */
+let frame = 0;
+function requestRender() {
+  if (!frame) frame = requestAnimationFrame(() => { frame = 0; render(); });
 }
 
 let cut = null; // last trace result
@@ -241,7 +285,7 @@ let cutStale = true;
 function render() {
   vg.fillStyle = '#fff';
   vg.fillRect(0, 0, SHEET.w, SHEET.h);
-  drawStickers(vg);
+  drawStickers(vg, true);
 
   // printable-area guide
   vg.save();
@@ -255,13 +299,7 @@ function render() {
     vg.save();
     vg.globalAlpha = cutStale ? 0.35 : 1;
     vg.lineJoin = 'round';
-    const path = new Path2D();
-    for (const c of cut.contours) {
-      for (const poly of [c.outer, ...(settings.cutHoles ? c.inners : [])]) {
-        poly.forEach((p, i) => (i ? path.lineTo(p.x + 0.5, p.y + 0.5) : path.moveTo(p.x + 0.5, p.y + 0.5)));
-        path.closePath();
-      }
-    }
+    const path = getCutPath();
     vg.strokeStyle = D; vg.lineWidth = 5; vg.stroke(path);
     vg.strokeStyle = A; vg.lineWidth = 2.5; vg.setLineDash([12, 8]); vg.stroke(path);
     vg.restore();
@@ -332,10 +370,10 @@ function renderList() {
     const tg = th.getContext('2d');
     const f = Math.min(68 / b.w, 68 / b.h);
     tg.translate(34, 34); tg.rotate((k.rot * Math.PI) / 2);
-    tg.drawImage(k.bmp, (-k.sw * k.s * f) / 2, (-k.sh * k.s * f) / 2, k.sw * k.s * f, k.sh * k.s * f);
+    tg.drawImage(sprite(k).img, (-k.sw * k.s * f) / 2, (-k.sh * k.s * f) / 2, k.sw * k.s * f, k.sh * k.s * f);
     const mid = document.createElement('div');
     mid.innerHTML = `<div class="name"></div><div class="dims"><input type="number" step="0.5" min="3" aria-label="width mm"> × <input type="number" step="0.5" min="3" aria-label="height mm"> mm</div>`;
-    mid.querySelector('.name').textContent = k.name;
+    mid.querySelector('.name').textContent = mid.querySelector('.name').title = k.name;
     const [wIn, hIn] = mid.querySelectorAll('input');
     wIn.value = (b.w / PX_PER_MM).toFixed(1);
     hIn.value = (b.h / PX_PER_MM).toFixed(1);
@@ -348,8 +386,9 @@ function renderList() {
     hIn.onchange = () => resize(+hIn.value, bbox(k).h);
     const acts = document.createElement('div');
     acts.className = 'acts';
-    acts.innerHTML = `<button class="btn icon" title="rotate (R)">&#8635;</button><button class="btn icon" title="duplicate (D)">&#10697;</button><button class="btn icon" title="remove (del)">&#10005;</button>`;
-    const [rotB, dupB, delB] = acts.children;
+    acts.innerHTML = `<button class="btn icon" title="reset to 1:1 size (1)">1:1</button><button class="btn icon" title="rotate (R)">&#8635;</button><button class="btn icon" title="duplicate (D)">&#10697;</button><button class="btn icon" title="remove (del)">&#10005;</button>`;
+    const [oneB, rotB, dupB, delB] = acts.children;
+    oneB.onclick = (e) => { e.stopPropagation(); resetScale(k); };
     rotB.onclick = (e) => { e.stopPropagation(); rotate(k); };
     dupB.onclick = (e) => { e.stopPropagation(); duplicate(k); };
     delB.onclick = (e) => { e.stopPropagation(); remove(k); };
@@ -359,6 +398,17 @@ function renderList() {
   }
 }
 
+/** Back to the image's natural print size (its PNG dpi, else 300 dpi), about its centre, capped to the sheet. */
+function resetScale(k) {
+  const b0 = bbox(k);
+  const cx = k.x + b0.w / 2, cy = k.y + b0.h / 2;
+  k.s = k.s0;
+  fitScale(k);
+  const b = bbox(k);
+  k.x = cx - b.w / 2; k.y = cy - b.h / 2;
+  clampInto(k); changed();
+  if (k.s < k.s0) log(`${k.name}: 1:1 is bigger than the sheet, so it's as large as fits`);
+}
 function rotate(k) {
   const b0 = bbox(k);
   const cx = k.x + b0.w / 2, cy = k.y + b0.h / 2;
@@ -432,7 +482,7 @@ view.addEventListener('pointermove', (e) => {
   }
   clampInto(k);
   cutStale = true;
-  render();
+  requestRender();
 });
 const endDrag = () => { if (drag) { drag = null; changed(); } };
 view.addEventListener('pointerup', endDrag);
@@ -446,6 +496,7 @@ document.addEventListener('keydown', (e) => {
   const moves = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] };
   if (moves[e.key]) { k.x += moves[e.key][0]; k.y += moves[e.key][1]; clampInto(k); changed(); e.preventDefault(); }
   else if (e.key === 'r' || e.key === 'R') rotate(k);
+  else if (e.key === '1') resetScale(k);
   else if ((e.key === 'd' || e.key === 'D') && !e.ctrlKey && !e.metaKey) duplicate(k);
   else if (e.key === 'Delete' || e.key === 'Backspace') { remove(k); e.preventDefault(); }
   else if (e.key === 'Escape') { selected = null; renderList(); render(); }

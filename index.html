@@ -71,15 +71,17 @@ input[type=checkbox] { accent-color: rgb(var(--a)); }
 
 #list { list-style: none; margin: 0; padding: 0; }
 #list li {
-  display: grid; grid-template-columns: 34px 1fr auto; gap: 6px; align-items: center;
+  display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 6px; align-items: center;
   padding: 6px; border: 1px solid transparent; border-radius: 4px; cursor: pointer;
 }
 #list li.sel { border-color: rgb(var(--a)); background: rgba(var(--a), .08); }
 #list li canvas { width: 34px; height: 34px; background: rgba(var(--a), .1); border-radius: 2px; }
 #list .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #list .dims { display: flex; align-items: center; gap: 4px; margin-top: 2px; }
-#list .dims input { width: 62px; }
+#list .dims input { width: 50px; -moz-appearance: textfield; }
+#list .dims input::-webkit-inner-spin-button, #list .dims input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 #list .acts { display: flex; gap: 3px; }
+#list .acts .btn { padding: 2px 6px; }
 
 #progress { height: 4px; background: rgba(var(--a), .15); border-radius: 2px; overflow: hidden; margin: 10px 0 4px; }
 #progress > div { height: 100%; width: 0; background: rgb(var(--a)); transition: width .2s; }
@@ -147,7 +149,7 @@ input[type=checkbox] { accent-color: rgb(var(--a)); }
     </section>
     <section>
       <h2>KEYS</h2>
-      <div class="kbd">drag to move &middot; corner to resize<br>arrows nudge 1 mm (shift 5 mm)<br>R rotate &middot; D duplicate &middot; del remove<br>ctrl+V paste an image</div>
+      <div class="kbd">drag to move &middot; corner to resize<br>arrows nudge 1 mm (shift 5 mm)<br>R rotate &middot; D duplicate &middot; del remove<br>1 reset to 1:1 size<br>ctrl+V paste an image</div>
     </section>
   </aside>
 </main>
