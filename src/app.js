@@ -1,6 +1,7 @@
 import { PixCut, SHEET, MAX_JPEG_BYTES, describeAlerts } from './protocol.js';
 import { traceSheet, padToRaster, CUT_DEFAULTS } from './cut.js';
 import * as usb from './webusb.js';
+import { nest, cellMask, buildSat } from './nest.js';
 
 const $ = (id) => document.getElementById(id);
 const PX_PER_MM = 300 / 25.4;
@@ -80,19 +81,58 @@ function fitScale(k) {
   k.s *= f;
 }
 
+/* ═══ arrange: nest every movable sticker by shape, shrinking them all evenly if they don't fit ═══ */
+const CELL = 6; // nesting grid, sheet px (~0.5 mm)
+function alphaSat(k) {
+  if (k.sat?.bmp === k.bmp) return k.sat.t;
+  const c = new OffscreenCanvas(k.sw, k.sh);
+  const g = c.getContext('2d', { willReadFrequently: true });
+  g.drawImage(k.bmp, 0, 0);
+  const { data } = g.getImageData(0, 0, k.sw, k.sh);
+  const bits = new Uint8Array(k.sw * k.sh);
+  for (let i = 0; i < bits.length; i++) bits[i] = data[i * 4 + 3] >= CUT_DEFAULTS.alphaThreshold / 2 ? 1 : 0;
+  const t = buildSat(bits, k.sw, k.sh);
+  k.sat = { bmp: k.bmp, t };
+  return t;
+}
+
 function arrange() {
-  const gap = gapPx();
-  const order = stickers.filter((k) => !k.sheet).sort((a, b) => bbox(b).h - bbox(a).h);
-  let x = EDGE, y = EDGE, rowH = 0, overflow = 0;
-  for (const k of order) {
-    const b = bbox(k);
-    if (x + b.w > SHEET.w - EDGE && x > EDGE) { x = EDGE; y += rowH + gap; rowH = 0; }
-    k.x = x; k.y = y;
-    if (y + b.h > SHEET.h - EDGE) overflow++;
-    x += b.w + gap; rowH = Math.max(rowH, b.h);
-    clampInto(k);
+  const movable = stickers.filter((k) => !k.sheet);
+  if (!movable.length) return;
+  const cols = Math.floor(SHEET.w / CELL), rows = Math.floor(SHEET.h / CELL);
+  const opts = {
+    cols, rows,
+    inset: Math.ceil(EDGE / CELL),
+    gap: Math.ceil(gapPx() / CELL),
+    obstacles: stickers.filter((k) => k.sheet).map((k) => ({
+      x: Math.floor(k.x / CELL), y: Math.floor(k.y / CELL), mask: cellMask(alphaSat(k), k.s, k.rot, CELL),
+    })),
+  };
+  const sats = movable.map(alphaSat);
+  const tryAt = (f) => nest(movable.map((k, i) => ({ masks: [0, 1, 2, 3].map((q) => cellMask(sats[i], k.s * f, (k.rot + q) % 4, CELL)) })), opts);
+
+  let f = 1, placed = tryAt(1);
+  if (!placed) {
+    // Shrink everything by the same factor (relative sizes stay put); bisect for the largest that fits.
+    const area = movable.reduce((n, k) => { const b = bbox(k); return n + b.w * b.h; }, 0);
+    let hi = Math.min(1, Math.sqrt(((SHEET.w - 2 * EDGE) * (SHEET.h - 2 * EDGE)) / area) * 1.5);
+    let lo = 0.02, best = tryAt(lo);
+    if (!best) { log("arrange: these stickers don't fit even at 2% size; remove some"); return; }
+    for (let i = 0; i < 10 && hi / lo > 1.005; i++) {
+      const mid = Math.sqrt(lo * hi), r = tryAt(mid);
+      if (r) { lo = mid; best = r; } else hi = mid;
+    }
+    f = lo; placed = best;
   }
-  if (overflow) log(`${overflow} sticker(s) don't fit; they overlap the bottom edge. Shrink something or remove one.`);
+  movable.forEach((k, i) => {
+    const p = placed[i];
+    k.s *= f;
+    k.rot = (k.rot + p.option) % 4;
+    k.x = p.x * CELL; k.y = p.y * CELL;
+  });
+  log(f < 1
+    ? `arranged ${movable.length} sticker(s), shrunk to ${Math.floor(f * 100)}% to fit`
+    : `arranged ${movable.length} sticker(s)`);
   changed();
 }
 
@@ -167,7 +207,7 @@ async function addFiles(files) {
       const b = bbox(k);
       const spot = findSpot(b.w, b.h, stickers);
       if (spot) Object.assign(k, spot);
-      else { k.x = EDGE; k.y = EDGE; log(`${f.name}: no free space left, placed on top; try arrange or resize`); }
+      else { k.x = EDGE; k.y = EDGE; log(`${f.name}: no free space left, placed on top; press arrange to nest and shrink to fit`); }
       stickers.push(k);
       selected = k;
     } catch (e) {

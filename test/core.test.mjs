@@ -95,3 +95,59 @@ test('padToRaster centres the sheet on white at 8,14', () => {
   const d = (14 * 1216 + 8) * 4;
   assert.deepEqual([...out.data.subarray(d, d + 3)], [10, 20, 30]);
 });
+
+import { nest, cellMask, buildSat, dilate, solidify, maskArea } from '../src/nest.js';
+
+const rect = (w, h) => ({ w, h, data: new Uint8Array(w * h).fill(1) });
+const overlapsAfterGrow = (placed, masks, gap) => {
+  // Stamp every placed mask grown by gap-1; no cell may be claimed twice.
+  const seen = new Map();
+  placed.forEach((p, i) => {
+    const m = masks[i][p.option], g = dilate(m, Math.floor(gap / 2));
+    const off = Math.floor(gap / 2);
+    for (let y = 0; y < g.h; y++) for (let x = 0; x < g.w; x++) {
+      if (!g.data[y * g.w + x]) continue;
+      const key = `${p.x + x - off},${p.y + y - off}`;
+      if (seen.has(key) && seen.get(key) !== i) throw new Error(`items ${seen.get(key)} and ${i} closer than ${gap}`);
+      seen.set(key, i);
+    }
+  });
+};
+
+test('nest: packs rectangles inside the inset with the gap kept, null when they cannot fit', () => {
+  const masks = Array.from({ length: 6 }, () => [rect(10, 20), rect(20, 10)]);
+  const opts = { cols: 50, rows: 50, inset: 2, gap: 2 };
+  const placed = nest(masks.map((m) => ({ masks: m })), opts);
+  assert.ok(placed);
+  placed.forEach((p, i) => {
+    const m = masks[i][p.option];
+    assert.ok(p.x >= 2 && p.y >= 2 && p.x + m.w <= 48 && p.y + m.h <= 48);
+  });
+  overlapsAfterGrow(placed, masks, 2);
+  assert.equal(nest([{ masks: [rect(47, 47)] }], opts), null);
+});
+
+test('nest: an L shape lets a block sit in its notch (shape nesting, not bounding boxes)', () => {
+  const L = { w: 20, h: 20, data: new Uint8Array(400) };
+  for (let y = 0; y < 20; y++) for (let x = 0; x < 20; x++) if (x < 5 || y >= 15) L.data[y * 20 + x] = 1;
+  // 20x20 sheet: the L fills it; a 10x10 block only fits in the notch.
+  const placed = nest([{ masks: [L] }, { masks: [rect(10, 10)] }], { cols: 20, rows: 20, gap: 2 });
+  assert.ok(placed);
+  assert.deepEqual(placed[0], { x: 0, y: 0, option: 0 });
+  assert.ok(placed[1].x >= 7 && placed[1].y + 10 <= 13);
+});
+
+test('cellMask: quarter turns map art to the right cells, holes filled', () => {
+  // 4x2 source with only the top-left pixel set, 1 px per cell.
+  const s = buildSat(Uint8Array.from([1, 0, 0, 0, 0, 0, 0, 0]), 4, 2);
+  const at = (m) => [...m.data].map((v, i) => (v ? [i % m.w, Math.floor(i / m.w)] : null)).filter(Boolean);
+  assert.deepEqual(at(cellMask(s, 1, 0, 1)), [[0, 0]]);
+  assert.deepEqual(at(cellMask(s, 1, 1, 1)), [[1, 0]]); // clockwise: top-left goes top-right
+  assert.deepEqual(at(cellMask(s, 1, 2, 1)), [[3, 1]]);
+  assert.deepEqual(at(cellMask(s, 1, 3, 1)), [[0, 3]]);
+  const ring = { w: 5, h: 5, data: new Uint8Array(25) };
+  for (let i = 0; i < 25; i++) { const x = i % 5, y = (i / 5) | 0; ring.data[i] = x === 0 || y === 0 || x === 4 || y === 4 ? 1 : 0; }
+  assert.equal(maskArea(solidify(ring)), 25);
+  // coarse cells: any covered pixel marks the cell
+  assert.equal(maskArea(cellMask(buildSat(new Uint8Array(100).fill(1), 10, 10), 1, 0, 3)), 16);
+});

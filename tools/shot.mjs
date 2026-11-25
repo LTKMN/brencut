@@ -18,6 +18,7 @@ try {
   if (pngs.length) {
     const input = await page.$('#file');
     await input.uploadFile(...pngs.map((p) => resolve(p)));
+    await page.waitForFunction((n) => document.getElementById('list').children.length >= n, { timeout: 15000 }, pngs.length);
     await page.waitForFunction(() => /path|nothing/.test(document.getElementById('cutStats').textContent), { timeout: 15000 });
     if (process.env.ARRANGE) {
       await page.$eval('#cutStats', (e) => { e.textContent = ''; });
